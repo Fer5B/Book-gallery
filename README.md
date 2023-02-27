@@ -7,7 +7,7 @@ API REST para una aplicación de una galería de libros o biblioteca.
 mvn clean install
 ```
 
-This is a Spring Boot project, so you can deploy it by simply using the main class: `DemoApplication.java`
+Este es un proyecto de Spring Boot, por lo que se implementa simplemente usando la clase principal: `DemoApplication.java`
 
-Once deployed, you can access the app at:
+Una vez implementada, puede acceder a la aplicación en:
 https://localhost:8080
