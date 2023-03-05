@@ -1,6 +1,8 @@
 package com.example.demo.persistence.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,9 +21,13 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message = "Title is mandatory")
     private String title;
+    @NotBlank(message = "Author is mandatory")
     private String author;
+    @NotNull(message = "Price is mandatory")
     private BigDecimal price;
+    @NotBlank(message = "Release date is mandatory")
     private String releaseDate;
 
     @Override

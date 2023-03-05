@@ -7,6 +7,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -16,13 +18,13 @@ public class BookModelAssembler implements RepresentationModelAssembler<Book, En
     public EntityModel<Book> toModel(Book book) {
         return EntityModel.of(book,
                 linkTo( methodOn(BookController.class).getBookById(book.getId())).withSelfRel(),
-                linkTo( methodOn(BookController.class).getAllBooks()).withRel("books"));
+                linkTo( methodOn(BookController.class).getAllBooks(0)).withRel("books"));
     }
 
     @Override
     public CollectionModel<EntityModel<Book>> toCollectionModel(Iterable<? extends Book> books) {
         CollectionModel<EntityModel<Book>> entityModelBooks = RepresentationModelAssembler.super.toCollectionModel(books);
-        entityModelBooks.add(linkTo(methodOn(BookController.class).getAllBooks()).withSelfRel());
+        entityModelBooks.add(linkTo(methodOn(BookController.class).getAllBooks(0)).withSelfRel());
         return entityModelBooks;
     }
 }

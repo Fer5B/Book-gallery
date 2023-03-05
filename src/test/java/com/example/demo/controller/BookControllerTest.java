@@ -15,6 +15,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -166,7 +167,7 @@ public class BookControllerTest {
 
     // JUnit test for update book - negative scenario
     @Test
-    public void givenUpdatedEmployee_whenUpdateEmployee_thenReturn404() throws Exception{
+    public void givenUpdatedBook_whenUpdateBook_thenReturn404() throws Exception{
         // given - precondition or setup
         long bookId = 1L;
         given(bookService.getBookById(bookId)).willReturn(Optional.empty());
@@ -194,6 +195,12 @@ public class BookControllerTest {
         // then - verify the output
         response.andExpect(status().isOk())
                 .andDo(print());
+    }
+
+
+    @Test
+    public void whenPostRequestToBooksAndValidBook_thenCorrectResponse() throws Exception {
+        String user = "{\"name\": \"bob\", \"email\" : \"bob@domain.com\"}";
     }
 
 
