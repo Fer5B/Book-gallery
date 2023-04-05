@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.BookModelAssembler;
+import com.example.demo.persistence.dao.BookRepository;
 import com.example.demo.persistence.model.Book;
 import com.example.demo.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,18 +14,22 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,9 +40,10 @@ import static org.hamcrest.CoreMatchers.is;
 public class BookControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private BookService bookService;
+    @MockBean
+    private BookRepository bookRepository;
     @MockBean
     private BookModelAssembler bookModelAssembler;
 
@@ -52,13 +58,13 @@ public class BookControllerTest {
                 .title("Don Quijote de la Mancha")
                 .author("Miguel de Cervantes")
                 .price(new BigDecimal("999.95"))
-                .releaseDate("1605")
+                .releaseDate(LocalDate.now())
                 .build();
         book2 = Book.builder()
                 .title("Rebelión en la granja")
                 .author("George Orwell")
                 .price(new BigDecimal("999.95"))
-                .releaseDate("1945")
+                .releaseDate(LocalDate.now())
                 .build();
     }
 
@@ -66,12 +72,12 @@ public class BookControllerTest {
     public void givenBookObject_whenCreateBook_thenReturnSavedBook() throws Exception {
 
         // given - precondition or setup
-        given( bookModelAssembler.toModel(bookService.saveBook(any(Book.class))) )
+        given( bookRepository.save(any(Book.class)) )
                 .willAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         // when - action or behaviour that we are going test
         ResultActions response = mockMvc.perform(post("/api/books")
-                .contentType(MediaTypes.HAL_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString( book1 )));
 
         // then - verify the result or output using assert statements
@@ -109,7 +115,8 @@ public class BookControllerTest {
     public void givenBookId_whenGetBookById_thenReturnBookObject() throws Exception{
         // given - precondition or setup
         long bookId = 1L;
-        given( bookService.getBookById(bookId) ).willReturn(Optional.of(book1));
+        when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book1));
+        given( bookService.getBookById(anyLong()) ).willReturn( Optional.of(book1) );
 
         // when -  action or the behaviour that we are going test
         ResultActions response = mockMvc.perform(get("/api/books/{id}", bookId));
@@ -196,13 +203,6 @@ public class BookControllerTest {
         response.andExpect(status().isOk())
                 .andDo(print());
     }
-
-
-    @Test
-    public void whenPostRequestToBooksAndValidBook_thenCorrectResponse() throws Exception {
-        String user = "{\"name\": \"bob\", \"email\" : \"bob@domain.com\"}";
-    }
-
 
 
 }

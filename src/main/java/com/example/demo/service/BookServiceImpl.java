@@ -3,20 +3,27 @@ package com.example.demo.service;
 import com.example.demo.persistence.dao.BookRepository;
 import com.example.demo.persistence.model.Book;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 public class BookServiceImpl implements BookService {
 
-    private final int PAGINATION_VALUE = 10;
+    private static final int PAGINATION_VALUE = 10;
 
     @Autowired
     private BookRepository bookRepository;
+
+    public static int getPaginationValue() {
+        return PAGINATION_VALUE;
+    }
 
     @Override
     public List<Book> getBooks() {
@@ -24,8 +31,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> getPaginatedBooks(int page) {
-        return bookRepository.findAll(PageRequest.of(page, PAGINATION_VALUE)).toList();
+    public Page<Book> getPaginatedBooks(int page) {
+        return bookRepository.findAll(PageRequest.of(page, PAGINATION_VALUE));
     }
 
     @Override
@@ -64,13 +71,41 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Optional<Book> findByTitleAndAuthorAndReleaseDate(String title, String author, String releaseDate) {
+    public Optional<Book> findByTitleAndAuthorAndReleaseDate(String title, String author, LocalDate releaseDate) {
         return bookRepository.findByTitleAndAuthorAndReleaseDate(title, author, releaseDate);
     }
 
     @Override
-    public List<Book> findByPriceBetween(BigDecimal startPrice, BigDecimal endPrice) {
-        return bookRepository.findByPriceBetween(startPrice, endPrice);
+    public Page<Book> getFilteredAndPaginatedBooks(int page, int size, String title, String author, BigDecimal startPrice, BigDecimal endPrice,
+                                                   LocalDate releaseDateFrom, LocalDate releaseDateTo, String sortBy) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(getOrderListFromString(sortBy)));
+
+        return bookRepository.findByTitleContainingIgnoreCaseAndAuthorContainingIgnoreCaseAndPriceBetweenAndReleaseDateBetween(
+                title, author, startPrice, endPrice, releaseDateFrom, releaseDateTo, pageable);
     }
+
+    @Override
+    public List<Book> findByReleaseDateBetween(LocalDate releaseDateFrom, LocalDate releaseDateTo) {
+        return bookRepository.findByReleaseDateBetween(releaseDateFrom, releaseDateTo);
+    }
+
+    private List<Sort.Order> getOrderListFromString(String sortBy) {
+        Set<Sort.Order> orders = new HashSet<>();
+
+        try {
+            String[] bookSortData = sortBy.replaceAll(" ","").split(",");
+
+            for (String fieldSortData: bookSortData) {
+                String[] fieldSortDirection = fieldSortData.split(":");
+                orders.add(new Sort.Order(Sort.Direction.valueOf(fieldSortDirection[1].toUpperCase()), fieldSortDirection[0]));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return orders.stream().toList();
+    }
+
 
 }
