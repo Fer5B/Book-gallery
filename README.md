@@ -9,9 +9,9 @@ mvn clean install
 
 Este es un proyecto de Spring Boot, por lo que se implementa simplemente usando la clase principal: `DemoApplication.java`.
 
-El proyecto utiliza la librería Lombok por lo que asegurese de poder utilizarla.
+El proyecto utiliza JDK 19 y la librería Lombok.
 
-Una vez implementada, puede acceder a la api mediante la url:
+Se puede acceder a la api mediante la url:
 ```
 https://localhost:8080/api/books  
 ```

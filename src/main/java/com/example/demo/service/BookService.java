@@ -1,7 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.BookSort;
-import com.example.demo.dto.PageData;
 import com.example.demo.persistence.model.Book;
 import org.springframework.data.domain.Page;
 

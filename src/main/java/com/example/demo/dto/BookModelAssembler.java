@@ -19,7 +19,6 @@ public class BookModelAssembler implements RepresentationModelAssembler<Book, En
     public EntityModel<Book> toModel(Book book) {
         return EntityModel.of(book,
                 linkTo( methodOn(BookController.class).getBookById(book.getId())).withSelfRel(),
-//                0, BookServiceImpl.getPaginationValue(),
                 linkTo( methodOn(BookController.class).getAllBooks(0, BookServiceImpl.getPaginationValue(),"","","","", LocalDate.MIN, LocalDate.MAX, "")).withRel("books"));
     }
 
@@ -29,4 +28,6 @@ public class BookModelAssembler implements RepresentationModelAssembler<Book, En
         entityModelBooks.add(linkTo(methodOn(BookController.class).getAllBooks(0, BookServiceImpl.getPaginationValue(),"","","","", LocalDate.MIN, LocalDate.MAX, "")).withSelfRel());
         return entityModelBooks;
     }
+
+
 }

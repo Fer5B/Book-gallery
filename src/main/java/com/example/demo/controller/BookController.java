@@ -14,12 +14,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
-import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -29,18 +27,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
 
 
 @RestController
 @RequestMapping("/api/books")
 @Validated
+@CrossOrigin(origins = "http://localhost:3000")
 public class BookController {
     @Autowired
     private BookService bookService;
@@ -129,7 +123,7 @@ public class BookController {
     public EntityModel<Book> getBookById(@PathVariable long id) {
         return bookService.getBookById(id)
                 .map(book -> bookModelAssembler.toModel(book))
-                .orElseThrow(() -> new BookNotFoundException(id) );
+                .orElseThrow(() ->  new BookNotFoundException(id));
     }
 
     @PutMapping(path = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
@@ -144,7 +138,7 @@ public class BookController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
             @ApiResponse(responseCode = "404", description = "Book not found", content = @Content(schema = @Schema(type = "string")))
     })
-    public EntityModel<Book> updateBook(@RequestBody Book book, @PathVariable long id) {
+    public EntityModel<Book> updateBook(@Valid @RequestBody Book book, @PathVariable long id) {
         return bookService.getBookById(id)
                 .map(b -> {
                     b.setAuthor(book.getAuthor());
@@ -169,13 +163,13 @@ public class BookController {
             @ApiResponse(responseCode = "404", description = "Book not found", content = @Content(schema = @Schema(type = "string")))
 
     })
-    public ResponseEntity<?> updateBookPrice(@RequestBody String price, @PathVariable long id) {
+    public ResponseEntity<?> updateBookPrice(@RequestBody @NumberFormat String price, @PathVariable long id) {
         return bookService.getBookById(id)
                 .map(b -> {
                     try {
                         b.setPrice(new BigDecimal(price.trim()));
                     }
-                    catch (Exception e) {
+                    catch (NumberFormatException e) {
                         return ResponseEntity.badRequest().body("It is mandatory to denote a digit that represents the new price of the book");
                     }
                     return ResponseEntity.ok(bookModelAssembler.toModel(bookService.updateBook(b)));

@@ -1,11 +1,8 @@
 package com.example.demo.persistence.dao;
 
-import com.example.demo.dto.BookSearchCriteria;
-import com.example.demo.dto.PageData;
 import com.example.demo.persistence.model.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

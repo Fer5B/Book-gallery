@@ -1,5 +1,6 @@
 package com.example.demo.persistence.model;
 
+import com.example.demo.validation.MyDateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -12,9 +13,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Objects;
@@ -37,14 +40,17 @@ public class Book {
     private String author;
     @NotNull(message = "Price is mandatory")
     private BigDecimal price;
-    @NotNull
-//    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @NotNull(message = "Release date is mandatory")
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 //    @Schema(type = "date", pattern = "dd-MM-yyyy", example = "01-01-1000")
+//    @MyDateTimeFormat
     private LocalDate releaseDate;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private ZonedDateTime createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private ZonedDateTime lastModify;
 
     @Override
     public boolean equals(Object o) {

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -42,11 +45,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book saveBook(Book book) {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.systemDefault());
+        book.setCreatedAt(zonedDateTime);
+        book.setLastModify(zonedDateTime);
         return bookRepository.save(book);
     }
 
     @Override
     public Book updateBook(Book book) {
+        book.setLastModify(ZonedDateTime.now(ZoneId.systemDefault()));
         return bookRepository.save(book);
     }
 

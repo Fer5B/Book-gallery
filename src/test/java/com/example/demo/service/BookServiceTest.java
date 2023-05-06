@@ -111,7 +111,6 @@ public class BookServiceTest {
         Book bookToDelete = bookList.get((int)id-1);
         doAnswer(invocationOnMock -> {
             Object[] args = invocationOnMock.getArguments();
-            System.out.println("Argument(0): " + args.toString());
             bookList.remove((int)id-1);
             return null;
         }).when(bookRepository).deleteById(anyLong());
